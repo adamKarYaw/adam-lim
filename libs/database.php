@@ -6,7 +6,7 @@ define('DB_NAME', 'psm2');
 define('DB_USER', 'root');
 define('DB_PASS', 'password');
 
-$connection = mysqli_connect('localhost','root','','psm2') or die(mysqli_error($connection));
+$connection = mysqli_connect('localhost','root','password','psm2') or die(mysqli_error($connection));
 
 ?>
 
