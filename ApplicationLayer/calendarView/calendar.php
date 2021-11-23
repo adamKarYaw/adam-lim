@@ -141,8 +141,6 @@ if(isset($_POST['action']) or isset($_GET['view']))
 <script src="../../src/plugin/fullcalendar/js/fullcalendar.js"></script>
 
 
-
-
 <!-- Add Event Modal -->
 <div id="createEventModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
