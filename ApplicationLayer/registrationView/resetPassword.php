@@ -6,24 +6,13 @@ $token = $_GET['token'];
 
 
 
-if(isset($_POST['submit'])){
+if(isset($_POST['set'])){
     require_once '..\..\BusinessServiceLayer\accountController\accountController.php';
     $user = new accountController();
         $accountModel = $user->setPassword($email, $token);
         
     
   }
-?>
-
-<?php
-require_once __DIR__ . '/../../BusinessServiceLayer/accountController/accountController.php';
-
-
-$user = new accountController();
-
-if (isset($_POST['login'])) {
-    $user->login();
-}
 ?>
 
 
