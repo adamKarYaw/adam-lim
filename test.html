@@ -1,0 +1,38 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function onClickCalled() {
+        var value_h4 = $("#label_h4").text();
+        $('#aa').val(value_h4);
+
+        var x = document.getElementById("label_h4");
+        var y = document.getElementById("aa");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            y.style.display = "none";
+        } else {
+            x.style.display = "none";
+            y.style.display = "block";
+        }
+    }
+
+    function onSaveCalled() {
+        var value_h4 = $("#aa").val()
+        alert(value_h4)
+    }
+
+    function onAssignValueCalled() {
+        // Call PHP API to get value
+        // Assign Value from API to the label based on ID
+
+        var y = document.getElementById("aa");
+        y.style.display = "none";
+    }
+</script>
+<html>
+<body onload="onAssignValueCalled()">
+<h4 id="label_h4">Hello world</h4>
+<input id="aa"/>
+<button onclick="onClickCalled()">Click Me</button>
+<button onclick="onSaveCalled()">Save</button>
+</body>
+</html>
