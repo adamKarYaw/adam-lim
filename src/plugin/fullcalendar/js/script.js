@@ -20,6 +20,8 @@ $(document).ready(function(){
                 $('#modalTitle').html(event.title);
                 $('#modalWhen').text(mywhen);
                 $('#modalDescription').text(event.description);
+                $('#modalLocation').text(event.location);
+                $('#modalEventType').text(event.eventType);
                 $('#eventID').val(event.id);
                 $('#calendarModal').modal();
             },
@@ -39,7 +41,7 @@ $(document).ready(function(){
            eventDrop: function(event, delta){
                $.ajax({
                    url: 'calendar.php',
-                   data: 'action=update&title='+event.title+'&description='+event.description+'&start='+moment(event.start).format()+'&end='+moment(event.end).format()+'&id='+event.id ,
+                   data: 'action=update&title='+event.title+'&description='+event.description+'&location='+event.location+'&eventType='+event.eventType+'&start='+moment(event.start).format()+'&end='+moment(event.end).format()+'&id='+event.id ,
                    type: "POST",
                    success: function(json) {
                    alert("Event Update");
@@ -49,7 +51,7 @@ $(document).ready(function(){
            eventResize: function(event) {
                $.ajax({
                    url: 'calendar.php',
-                   data: 'action=update&title='+event.title+'&description='+event.description+'&start='+moment(event.start).format()+'&end='+moment(event.end).format()+'&id='+event.id,
+                   data: 'action=update&title='+event.title+'&description='+event.description+'&location='+event.location+'&eventType='+event.eventType+'&start='+moment(event.start).format()+'&end='+moment(event.end).format()+'&id='+event.id,
                    type: "POST",
                    success: function(json) {
                       alert("Event Update");
@@ -94,12 +96,14 @@ $(document).ready(function(){
            $("#createEventModal").modal('hide');
            var title = $('#title').val();
            var description = $('#description').val();
+           var location = $('#location').val();
+           var eventType = $('#eventType').val();
            var startTime = $('#startTime').val();
            var endTime = $('#endTime').val();
            
            $.ajax({
                url: 'calendar.php',
-               data: 'action=add&title='+title+'&description='+description+'&start='+startTime+'&end='+endTime,
+               data: 'action=add&title='+title+'&description='+description+'&location='+location+'&eventType='+eventType+'&start='+startTime+'&end='+endTime,
                type: "POST",
                success: function(json) {
                    $("#calendar").fullCalendar('renderEvent',
@@ -107,6 +111,8 @@ $(document).ready(function(){
                        id: json.id,
                        title: title,
                        description: description,
+                       location: location,
+                       eventTypet: eventType,
                        start: startTime,
                        end: endTime,
                    },

@@ -1,4 +1,5 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
 require_once  __DIR__ . '/../accountModel/accountModel.php';
 
 class accountController
@@ -46,26 +47,42 @@ class accountController
             
             if ($user->checkEmail() == 0) {
                  if ($user->register()){
+                    require_once "../../PHPMailer/PHPMailer.php";
+                    require_once "../../PHPMailer/SMTP.php";
+                    require_once "../../PHPMailer/Exception.php";
+
+                    $mail = new PHPMailer();
+
+                    $mail->isSMTP();
+                    $mail->Host =  "smtp.gmail.com";
+                    $mail->SMTPAuth = true;
+                    $mail->Username = "semtest98@gmail.com";
+                    $mail->Password = "karwei98+";
+                    $mail->Port = 465;
+                    $mail->SMTPSecure = "ssl";
+                            
+                    $mail->isHTML(true);
+                    $mail->addAddress($user->email);
+                    $mail->setFrom("semtest98@gmail.com", "Mr/Mrs/Ms");
+                    $mail->Subject = "Signup | Verification"; // Give the email a subject"
+
                     // set message
-                    $to      = $_POST['email']; // Send email to our user
-                    $subject = 'Signup | Verification'; // Give the email a subject 
-                    $message = '
+                    $mail->Body = "
                   
-                    Thanks for signing up!
-                    Your account has been created, you can login with the following credentials after you have activated your account by pressing the url below.
+                    Thanks for signing up! <br>
+                    Your account has been created, you can login with the following credentials after you have activated your account by pressing the url below.<br>
                   
-                    ------------------------
-                    Username: '.$_POST['username'].'
-                    Password: '.$_POST['userPwd'].'
-                    ------------------------
+                    ------------------------<br>
+                    Username: ".$_POST["username"]."<br>
+                    Password: ".$_POST["userPwd"]."<br>
+                    ------------------------ <br>
                   
-                    Please click this link to activate your account:
-                    http://localhost/psm2/ApplicationLayer/registrationView/verify.php?email='.$_POST['email'].'&hash='.$user->hash.'
+                    Please click this link to activate your account: <br>
+                    <a href='http://localhost/psm2/ApplicationLayer/registrationView/verify.php?email=$user->email&hash=$user->hash'>http://localhost/psm2/ApplicationLayer/registrationView/verify.php?email=$user->email&hash=$user->hash</a> <br>
                   
-                    '; // Our message above including the link
-                                      
-                    $headers = 'From:noreply@yourwebsite.com' . "\r\n"; // Set from headers
-                    if (mail($to, $subject, $message, $headers))
+                    "; // Our message above including the link
+                    
+                    if ($mail->send())
                     { // Send our email
                       $message = 'Please verify your email address'; 
                     echo "<script type='text/javascript'>
@@ -120,21 +137,40 @@ class accountController
       }
 
       if($user->addToken()){
-        $to      = $_POST['email']; // Send email to our user
-        $subject = 'Change Password | Verification'; // Give the email a subject 
-        $message = '
-  
-        Account Registered with email below have requested for reset password.
-  
-  
-        In order to reset your passowrd, please click the link below:
-        http://localhost/psm2-1/ApplicationLayer/registrationView/resetPassword.php?email='.$_POST['email'].'&token='.$user->token.'
-  
-        '; // Our message above including the link
-                      
-        $headers = 'From:noreply@yourwebsite.com' . "\r\n"; // Set from headers
+        require_once "../../PHPMailer/PHPMailer.php";
+        require_once "../../PHPMailer/SMTP.php";
+        require_once "../../PHPMailer/Exception.php";
 
-        if (mail($to, $subject, $message, $headers)){ // Send our email
+        $mail = new PHPMailer();
+
+        $mail->isSMTP();
+        $mail->Host =  "smtp.gmail.com";
+        $mail->SMTPAuth = true;
+        $mail->Username = "semtest98@gmail.com";
+        $mail->Password = "karwei98+";
+        $mail->Port = 465;
+        $mail->SMTPSecure = "ssl";
+                            
+        $mail->isHTML(true);
+        $mail->addAddress($user->email);
+        $mail->setFrom("semtest98@gmail.com", "Mr/Mrs/Ms");
+        $mail->Subject = "Change Password | Verification"; // Give the email a subject"
+
+        $mail->Body = "
+  
+        Account Registered with email below have requested for reset password.<br><br>
+  
+  
+        In order to reset your passowrd, please click the link below:<br>
+        <a href='http://localhost/psm2/ApplicationLayer/registrationView/resetPassword.php?email=$user->email&token=$user->token'>
+        http://localhost/psm2/ApplicationLayer/registrationView/resetPassword.php?email=$user->email&token=$user->token
+        </a>
+        
+  
+        "; // Our message above including the link
+                    
+
+        if ($mail->send()){ // Send our email
           $message = 'Reset link has sent to your email. Please check your email inbox.'; 
           echo "<script type='text/javascript'>
                       alert('$message');
@@ -142,7 +178,7 @@ class accountController
                       </script>";
                     }
                     else {
-                      $message = 'Error! Please try it again';
+                      $message = 'Incorrect email! Please enter the correct email again';
                       echo "<script type='text/javascript'>
                       alert('$message');
                       window.location.href=('http://localhost/psm2/ApplicationLayer/registrationView/login.php'); 
@@ -160,6 +196,13 @@ class accountController
     if($user->setPassword() > 0){
       $message = 'Your Password is reset already.';
       echo "<script type='text/javascript'>
+                      alert('$message');
+                      window.location.href=('http://localhost/psm2/ApplicationLayer/registrationView/login.php'); 
+                      </script>";
+    }
+    else{
+        $message ='The reset link is expired. Please refer to the latest refer link.';
+        echo "<script type='text/javascript'>
                       alert('$message');
                       window.location.href=('http://localhost/psm2/ApplicationLayer/registrationView/login.php'); 
                       </script>";

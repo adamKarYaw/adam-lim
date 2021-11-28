@@ -13,53 +13,19 @@ if(isset($_POST['action']) or isset($_GET['view']))
 {
     if(isset($_GET['view']))
     {
-        header('Content-Type: application/json');
-        $start = mysqli_real_escape_string($connection,$_GET["start"]);
-        $end = mysqli_real_escape_string($connection,$_GET["end"]);
-
-        $result = mysqli_query($connection,"SELECT `id`, `start` ,`end` ,`title`,`description` FROM  `events` where (date(start) >= '$start' AND date(start) <= '$end') and userID='".$userID."'");
-        while($row = mysqli_fetch_assoc($result))
-        {
-            $events[] = $row; 
-        }
-        echo json_encode($events); 
-        exit;
+        include("../../BusinessServiceLayer/calendarController/viewEvent.php");
     }
     elseif($_POST['action'] == "add")
     {   
-        mysqli_query($connection,"INSERT INTO `events` (
-                    `title` ,
-                    `description` ,
-                    `start` ,
-                    `end` ,
-                    `userID` 
-                    )
-                    VALUES (
-                    '".mysqli_real_escape_string($connection,$_POST["title"])."',
-                    '".mysqli_real_escape_string($connection,$_POST["description"])."',
-                    '".mysqli_real_escape_string($connection,date('Y-m-d H:i:s',strtotime($_POST["start"])))."',
-                    '".mysqli_real_escape_string($connection,date('Y-m-d H:i:s',strtotime($_POST["end"])))."',
-                    '".mysqli_real_escape_string($connection,$userID)."'
-                    )");
-        header('Content-Type: application/json');
-        echo '{"id":"'.mysqli_insert_id($connection).'"}';
-        exit;
+        include("../../BusinessServiceLayer/calendarController/addEvent.php");
     }
     elseif($_POST['action'] == "update")
     {
-        mysqli_query($connection,"UPDATE `events` set 
-            `start` = '".mysqli_real_escape_string($connection,date('Y-m-d H:i:s',strtotime($_POST["start"])))."', 
-            `end` = '".mysqli_real_escape_string($connection,date('Y-m-d H:i:s',strtotime($_POST["end"])))."' 
-            where userID = '".mysqli_real_escape_string($connection,$userID)."' and id = '".mysqli_real_escape_string($connection,$_POST["id"])."'");
-        exit;
+        include("../../BusinessServiceLayer/calendarController/updateEvent.php");
     }
     elseif($_POST['action'] == "delete") 
     {
-        mysqli_query($connection,"DELETE from `events` where userID = '".mysqli_real_escape_string($connection,$userID)."' and id = '".mysqli_real_escape_string($connection,$_POST["id"])."'");
-        if (mysqli_affected_rows($connection) > 0) {
-            echo "1";
-        }
-        exit;
+        include("../../BusinessServiceLayer/calendarController/deleteEvent.php");
     }
 }
 
@@ -130,7 +96,7 @@ if(isset($_POST['action']) or isset($_GET['view']))
       
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script type="text/javascript" src="../../j/js/script.js"></script>
+<script type="text/javascript" src="../../src/plugin/fullcalendar/js/script.js"></script>
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
 <link  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" >
@@ -158,10 +124,25 @@ if(isset($_POST['action']) or isset($_GET['view']))
                 </div>
             </div>
 
+            <div class="form-group">
+                <label for="eventNote" class="col-form-label">Description:</label>
+                <textarea class="form-control" id="description" name="description" placeholder="Add some description for your event"></textarea>
+            </div>
+
             <div class="control-group">
-                <label class="control-label" for="inputPatient">Description:</label>
+                <label class="control-label" for="inputPatient">Location:</label>
                 <div class="field desc">
-                    <input class="form-control" id="description" name="description" placeholder="Description" type="text" value="">
+                    <input class="form-control" id="location" name="location" placeholder="Location" type="text" value="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-8">
+                    <label for="eventType">Event type</label>
+                    <select id="eventType" name="eventType" class="form-control select2">
+                        <option value="Indoor">Indoor</option>
+                        <option value="Outdoor">Outdoor</option>
+                    </select>
                 </div>
             </div>
 
@@ -200,8 +181,13 @@ if(isset($_POST['action']) or isset($_GET['view']))
         <h4 id="modalTitle" class="modal-title"></h4>
           <label class="control-label" for="inputPatient">Description:</label>
         <h4 id="modalDescription" class="modal-title"></h4>
+          <label class="control-label" for="inputPatient">Location:</label>
+        <h4 id="modalLocation" class="modal-title"></h4>
+          <label class="control-label" for="inputPatient">Event Type:</label>
+        <h4 id="modalEventType" class="modal-title"></h4>
         <div id="modalWhen" style="margin-top:5px;"></div>
         </div>
+        
         <input type="hidden" id="eventID"/>
         <div class="modal-footer">
             <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
